@@ -17,6 +17,11 @@
 		  function gtag(){dataLayer.push(arguments);}
 		  gtag('js', new Date());
 		  gtag('config', 'G-D2XYDKMXME');
+		  gtag('event', 'contact_page_view', {
+		    page_path: window.location.pathname,
+		    page_title: document.title,
+		    page_location: window.location.href
+		  });
 		</script>
 	</head>
 	<body class="is-preload">
