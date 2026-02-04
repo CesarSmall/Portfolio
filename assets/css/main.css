@@ -3667,6 +3667,28 @@
 						color: #fff;
 					}
 
+					#navPanel .link.is-hidden {
+						display: none;
+					}
+
+					#navPanel .link.nav-parent {
+						padding-right: 2.75em;
+						position: relative;
+					}
+
+					#navPanel .link.nav-parent .nav-toggle {
+						color: #bbb;
+						cursor: pointer;
+						display: block;
+						height: 44px;
+						line-height: 44px;
+						position: absolute;
+						right: 0.75em;
+						top: 0;
+						text-align: center;
+						width: 2em;
+					}
+
 					#navPanel .link .indent-1 {
 						display: inline-block;
 						width: 1em;
