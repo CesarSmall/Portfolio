@@ -48,6 +48,44 @@
 	color: #666;
 }
 
+/* Project cards */
+
+	.project-cards > div {
+		display: flex;
+		margin-bottom: 2em;
+	}
+
+	.project-cards .box.special {
+		display: flex;
+		flex-direction: column;
+		height: 100%;
+	}
+
+	.project-cards .image.featured {
+		height: 220px;
+		overflow: hidden;
+	}
+
+	.project-cards .image.featured img {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+	}
+
+	.project-cards .actions {
+		margin-top: auto;
+	}
+
+	@media screen and (max-width: 736px) {
+		.project-cards > div {
+			margin-bottom: 1.5em;
+		}
+
+		.project-cards .image.featured {
+			height: 180px;
+		}
+	}
+
 @media screen and (max-width: 480px) {
 	.work-place-item {
 		grid-template-columns: 56px 1fr;

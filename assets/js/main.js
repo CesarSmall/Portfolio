@@ -70,11 +70,37 @@
 				return;
 
 			var $links = $navPanel.find('.link');
+			if ($links.length === 0)
+				return;
 
 			var getDepth = function($link) {
 				var match = /depth-(\d+)/.exec($link.attr('class') || '');
 				return match ? parseInt(match[1], 10) : 0;
 			};
+
+			var linkData = [];
+			$links.each(function(index) {
+				var $link = $(this);
+				linkData.push({
+					$link: $link,
+					depth: getDepth($link),
+					index: index,
+					parentIndex: null,
+					hasChildren: false
+				});
+			});
+
+			for (var i = 0; i < linkData.length; i++) {
+				var current = linkData[i];
+				for (var j = i - 1; j >= 0; j--) {
+					if (linkData[j].depth === current.depth - 1) {
+						current.parentIndex = j;
+						break;
+					}
+				}
+				if (current.parentIndex !== null)
+					linkData[current.parentIndex].hasChildren = true;
+			}
 
 			var $genericSuiteLink = $links.filter(function() {
 				return $(this).text().trim() === 'Generic Suite';
@@ -83,44 +109,90 @@
 			if ($genericSuiteLink.length === 0)
 				return;
 
-			var parentDepth = getDepth($genericSuiteLink);
-			var $children = $();
+			var genericSuiteIndex = null;
+			for (var k = 0; k < linkData.length; k++) {
+				if (linkData[k].$link.is($genericSuiteLink)) {
+					genericSuiteIndex = k;
+					break;
+				}
+			}
 
-			$genericSuiteLink.nextAll('.link').each(function() {
-				var $child = $(this);
-				var depth = getDepth($child);
-
-				if (depth <= parentDepth)
-					return false;
-
-				$children = $children.add($child);
-			});
-
-			if ($children.length === 0)
+			if (genericSuiteIndex === null)
 				return;
 
-			var setExpanded = function(expanded) {
-				$genericSuiteLink
+			var setExpanded = function($link, expanded) {
+				$link
 					.toggleClass('is-expanded', expanded)
 					.toggleClass('is-collapsed', !expanded)
 					.attr('aria-expanded', expanded);
 
-				$children.toggleClass('is-hidden', !expanded);
-				$genericSuiteLink.find('.nav-toggle').text(expanded ? '▾' : '▸');
+				$link.find('.nav-toggle').text(expanded ? '▾' : '▸');
 			};
 
-			$children.addClass('nav-child is-hidden');
-			$genericSuiteLink
-				.addClass('nav-parent is-collapsed')
-				.attr('aria-expanded', 'false')
-				.append('<span class="nav-toggle" role="button" aria-label="Toggle Generic Suite submenu" tabindex="0">▸</span>');
+			var isWithinGenericSuite = function(itemIndex) {
+				var parentIndex = linkData[itemIndex].parentIndex;
+				while (parentIndex !== null) {
+					if (parentIndex === genericSuiteIndex)
+						return true;
+					parentIndex = linkData[parentIndex].parentIndex;
+				}
+				return false;
+			};
 
-			setExpanded(false);
+			var refreshVisibility = function() {
+				linkData.forEach(function(item, itemIndex) {
+					if (itemIndex === genericSuiteIndex || !isWithinGenericSuite(itemIndex)) {
+						item.$link.removeClass('is-hidden');
+						return;
+					}
+
+					var shouldHide = false;
+					var parentIndex = item.parentIndex;
+					while (parentIndex !== null) {
+						var parent = linkData[parentIndex];
+						if (parentIndex === genericSuiteIndex && parent.$link.hasClass('is-collapsed')) {
+							shouldHide = true;
+							break;
+						}
+						if (parentIndex !== genericSuiteIndex && parent.$link.hasClass('is-collapsed')) {
+							shouldHide = true;
+							break;
+						}
+						parentIndex = parent.parentIndex;
+					}
+					item.$link.toggleClass('is-hidden', shouldHide);
+				});
+			};
+
+			linkData.forEach(function(item, itemIndex) {
+				if (!item.hasChildren)
+					return;
+
+				if (itemIndex !== genericSuiteIndex && !isWithinGenericSuite(itemIndex))
+					return;
+
+				item.$link
+					.addClass('nav-parent is-collapsed')
+					.attr('aria-expanded', 'false');
+
+				if (item.$link.find('.nav-toggle').length === 0) {
+					item.$link.append('<span class="nav-toggle" role="button" aria-label="Toggle submenu" tabindex="0">▸</span>');
+				}
+			});
+
+			linkData.forEach(function(item, itemIndex) {
+				if (item.hasChildren && (itemIndex === genericSuiteIndex || isWithinGenericSuite(itemIndex)))
+					setExpanded(item.$link, false);
+			});
+
+			refreshVisibility();
 
 			$navPanel.on('click', '.nav-toggle', function(event) {
 				event.preventDefault();
 				event.stopPropagation();
-				setExpanded(!$genericSuiteLink.hasClass('is-expanded'));
+				var $parentLink = $(this).closest('.link');
+				setExpanded($parentLink, !$parentLink.hasClass('is-expanded'));
+				refreshVisibility();
 			});
 
 			$navPanel.on('keydown', '.nav-toggle', function(event) {
