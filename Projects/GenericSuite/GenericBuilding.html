@@ -6,7 +6,7 @@
 -->
 <html>
 	<head>
-		<title>Cesar Small - Generic Storage</title>
+		<title>Cesar Small - Generic Building</title>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
 		<link rel="stylesheet" href="../../assets/css/main.css" />
@@ -24,7 +24,7 @@
 
 			<!-- Header -->
 				<header id="header">
-					<h1><a href="../../index.html">Cesar Small</a> - Generic Storage</h1>
+					<h1><a href="../../index.html">Cesar Small</a> - Generic Building</h1>
 					<nav id="nav">
 						<ul>
 							<li><a href="../../index.html">Home</a></li>
@@ -48,7 +48,6 @@
 												<li><a href="GenericInteractions.html">Generic Interactions</a></li>
 												<li><a href="GenericFarming.html">Generic Farming</a></li>
 												<li><a href="GenericLeveling.html">Generic Leveling</a></li>
-												<li><a href="GenericBuilding.html">Generic Building</a></li>
 											</ul>
 											</li>
 										</ul>
@@ -63,31 +62,28 @@
 			<!-- Main -->
 				<section id="main" class="container">
 					<header>
-						<h2>Generic Storage</h2>
-						<p>A quick solution to inventories and hotbars</p>
+						<h2>Generic Building</h2>
+						<p>Simple building system with no hassle in Unreal Engine</p>
 					</header>
 					<div class="box">
 						<span class="image featured"><img src="../../images/pic01.jpg" alt="" /></span>
 						<h3>What is it?</h3>
 						<p>
-							Generic Storage in a plugin that allows for a quick and easy way to give a player an inventory or hotbar system in their game. It is designed to be as flexible as possible so that it can be used in a variety of different game types and styles.
+							Is is a plugin that allows for users to place and remove placeable actors in the world with ease. It's based around the building systems seen in games like Rust, Valheim, or even ARK.
 							<br><br>
-							Generic Storage is both highly customizable and easy to use. It comes with a variety of different features that allow for a wide range of functionality, including:
-							<ul>
-								<li>Customizable inventory size and layout</li>
-								<li>Item stacking and unstacking</li>
-								<li>Drag and drop support through events and demos</li>
-								<li>Hotbar support</li>
-								<li>Replication using FastArraySerializer</li>
-								<li>Asset Manager support</li>
+							It supports valid and invalid placement with an interface as well as grid snapping.
 						</p>
 						<div class="row">
 							<div class="row-6 row-12-mobilep">
 								<h3>How to use it</h3>
+								
 								<p>
-									This part has not been finished yet, I apologize for the inconvenience.
-									<br><br>WIP
+									Generic Building is very easy to use, simply add the component to your character and set up its properties. To place a blueprint in the world call the StartPlacement() function from the component and pass in the GBuildData.
+									<br> that is composed of the blueprint class you want to place and a static mesh for the actor.
+									<br><br>
+									It also provides an interface that can be implemented by the actors that you want to be placeable, this interface will allow you to customize the behavior of the building system for each actor.
 								</p>
+							
 							</div>
 							<div class="row-6 row-12-mobilep">
 								<h3>Examples</h3>
