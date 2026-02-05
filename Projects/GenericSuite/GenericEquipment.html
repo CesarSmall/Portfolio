@@ -63,29 +63,31 @@
 				<section id="main" class="container">
 					<header>
 						<h2>Generic Equipment</h2>
-						<p>A quick solution to inventories and hotbars</p>
+						<p>Easy and modular equipments or tools</p>
 					</header>
 					<div class="box">
 						<span class="image featured"><img src="../../images/pic01.jpg" alt="" /></span>
 						<h3>What is it?</h3>
 						<p>
-							Generic Storage in a plugin that allows for a quick and easy way to give a player an inventory or hotbar system in their game. It is designed to be as flexible as possible so that it can be used in a variety of different game types and styles.
+							Generic Equipment is a plugin for Unreal Engine that provides a simple and flexible way to create and manage equipment or tools for characters in a game.
+							It simply allows for a simple way to activate or attach an item to an actor and define its behavior through events and blueprints.
 							<br><br>
-							Generic Storage is both highly customizable and easy to use. It comes with a variety of different features that allow for a wide range of functionality, including:
+							This system allows us to:
 							<ul>
-								<li>Customizable inventory size and layout</li>
-								<li>Item stacking and unstacking</li>
-								<li>Drag and drop support through events and demos</li>
-								<li>Hotbar support</li>
-								<li>Replication using FastArraySerializer</li>
-								<li>Asset Manager support</li>
+								<li>Create equipment that is visible on the player at socket points</li>
+								<li>Create tools with custom behaviour</li>
+								<li>Have replicated equipment and tools in a minimal setup</li>
 						</p>
 						<div class="row">
 							<div class="row-6 row-12-mobilep">
 								<h3>How to use it</h3>
 								<p>
-									This part has not been finished yet, I apologize for the inconvenience.
-									<br><br>WIP
+									Once the plugin is installed, the only actual requirement is to add the actor component to the Character class and call TryToEquip 
+									passing in a static mesh for the visual, UObject* that implements the equipment interface for the items logic and the socket name to attach it to.
+									
+									<br><br>From there the rest of the setup is up to the user in their project. They can define the equipment behaviour through the interface events in blueprint or C++
+									and simply need to call UseItem on the component to trigger the equipment's use behaviour (which includes a check to see if the equipment can be used at that time and delegates for feedback).
+								
 								</p>
 							</div>
 							<div class="row-6 row-12-mobilep">
@@ -105,9 +107,6 @@
 						<li><a href="https://github.com/CesarSmall25" class="icon brands fa-github"><span class="label">Github</span></a></li>
 						<li><a href="https://www.linkedin.com/in/cesar-small/" class="icon brands fa-linkedin"><span class="label">LinkedIn</span></a></li>
 						<li><a href="../../contact.html" class="icon fa fa-regular fa-envelope"><span class="label">Contact Me</span></a></li>					</ul>
-					<ul class="copyright">
-						<li>&copy; Untitled. All rights reserved.</li><li>Design: <a href="http://html5up.net">HTML5 UP</a></li>
-					</ul>
 				</footer>
 
 		</div>

@@ -63,29 +63,51 @@
 				<section id="main" class="container">
 					<header>
 						<h2>Generic Economy</h2>
-						<p>A quick solution to inventories and hotbars</p>
+						<p>Easy and flexible economy system for Unreal Engine</p>
 					</header>
 					<div class="box">
 						<span class="image featured"><img src="../../images/pic01.jpg" alt="" /></span>
 						<h3>What is it?</h3>
 						<p>
-							Generic Storage in a plugin that allows for a quick and easy way to give a player an inventory or hotbar system in their game. It is designed to be as flexible as possible so that it can be used in a variety of different game types and styles.
+							Generic Economy is a plugin that provides an easy and flexible economy system for Unreal Engine games. It is designed to be highly customizable and adaptable to different game types and styles.
 							<br><br>
-							Generic Storage is both highly customizable and easy to use. It comes with a variety of different features that allow for a wide range of functionality, including:
+							Generic Economy offers a variety of features that enable a wide range of economic functionalities, including:
 							<ul>
-								<li>Customizable inventory size and layout</li>
-								<li>Item stacking and unstacking</li>
-								<li>Drag and drop support through events and demos</li>
-								<li>Hotbar support</li>
-								<li>Replication using FastArraySerializer</li>
-								<li>Asset Manager support</li>
+								<li>Dynamic item value management system</li>
+								<li>Independent or global shops</li>
+								<li>Cached and tweakable currencies for runtime efficiency</li>
+								<li>Wallet support</li>
+								<li>Definable and manageable economic parameters</li>
 						</p>
 						<div class="row">
 							<div class="row-6 row-12-mobilep">
 								<h3>How to use it</h3>
+								
+								<h4>Wallet and currencies</h4>
+								<br>
 								<p>
-									This part has not been finished yet, I apologize for the inconvenience.
-									<br><br>WIP
+								The system is built around DataTables and the Asset Manager. Do define a currency the user must create a Primary Currency Data asset and a CurrencyDT. 
+								<br> Once created it must be set in the project settings. From there once the game is created the system will cache all currencies in an array stored on the economy subsystem
+								that can then be fetched or modified at runtime.
+								<br> To use the wallet simply equip a wallet component and voila, the user has a wallet that can store multiple currencies. From here the implementation of the wallet is fully up to the user.
+								If they wish to display it with a widget or maybe through some other means (like a physical representation in the world) that is up to them.
+								</p>
+								
+								<br>
+				
+								<h4>Shops and items</h4>
+								<p>
+								For the shop there are a few extra steps. First the user must create an ItemValue Primary Data Asset that will define the items properties such as its buy and sell costs.
+								This allows for the system to be able to keep track of all items independently and have shops easily identify them. To then register them with the subsystem the user must
+								create a DataTable that will hold references to all the ItemValue assets they wish to use in their game. For shops the implementation is very flexible, requiring an override
+								of 2 functions to define how the shop will load its items and how the transfer of said items will occur on purchase. This is because for us to be project agnostic we can only
+								offer the body of a shop and handling of its items but since every project will have different item implementations we cannot define how the items are given to or taken from the player.
+
+								<br><br> Once the user has defined their shop class they simply need to add a shop component to their desired actors to have a fully functional economy system.
+
+								<br><br>NOTE: if the user wishes for this system to be networked they must put a GEconomyNetworkComponent on either their Player Controlled PlayerState or PlayerController. 
+								The class just needs to own a valid NetConnection.</br>
+								
 								</p>
 							</div>
 							<div class="row-6 row-12-mobilep">
@@ -105,9 +127,6 @@
 						<li><a href="https://github.com/CesarSmall25" class="icon brands fa-github"><span class="label">Github</span></a></li>
 						<li><a href="https://www.linkedin.com/in/cesar-small/" class="icon brands fa-linkedin"><span class="label">LinkedIn</span></a></li>
 						<li><a href="../../contact.html" class="icon fa fa-regular fa-envelope"><span class="label">Contact Me</span></a></li>					</ul>
-					<ul class="copyright">
-						<li>&copy; Untitled. All rights reserved.</li><li>Design: <a href="http://html5up.net">HTML5 UP</a></li>
-					</ul>
 				</footer>
 
 		</div>

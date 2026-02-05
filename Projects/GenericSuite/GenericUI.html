@@ -63,29 +63,49 @@
 				<section id="main" class="container">
 					<header>
 						<h2>Generic UI</h2>
-						<p>A quick solution to inventories and hotbars</p>
+						<p>A simple expansion for even easier Common UI support</p>
 					</header>
 					<div class="box">
 						<span class="image featured"><img src="../../images/pic01.jpg" alt="" /></span>
 						<h3>What is it?</h3>
 						<p>
-							Generic Storage in a plugin that allows for a quick and easy way to give a player an inventory or hotbar system in their game. It is designed to be as flexible as possible so that it can be used in a variety of different game types and styles.
+							Generic UI is a plugin that expands on top of the Common UI plugin provided by Epic Games for Unreal Engine. It provides additional functionality and features that make it even easier to create and manage user interfaces in Unreal Engine
 							<br><br>
-							Generic Storage is both highly customizable and easy to use. It comes with a variety of different features that allow for a wide range of functionality, including:
-							<ul>
-								<li>Customizable inventory size and layout</li>
-								<li>Item stacking and unstacking</li>
-								<li>Drag and drop support through events and demos</li>
-								<li>Hotbar support</li>
-								<li>Replication using FastArraySerializer</li>
-								<li>Asset Manager support</li>
+							The core concept is that every UI element is a widget that can be created, shown, hidden and destroyed through simple blueprint nodes.
+							<br>It also provides a UI Manager that handles the creation and management of these widgets or a navigation component that can be added for easy local navigation. 
+							Both are valid options and ultimately have the same functionality under the hood, with a few extra steps through the manager.
 						</p>
 						<div class="row">
 							<div class="row-6 row-12-mobilep">
 								<h3>How to use it</h3>
+								<h4>Setting up the layers for the UI</h4>
 								<p>
-									This part has not been finished yet, I apologize for the inconvenience.
-									<br><br>WIP
+									Generic UI relies on the Common UI plugin's layer system to manage the different UI elements. Once Common UI is enabled in the project settings, the user needs to create a few things in order to get the system working:
+									<ul>
+										<li>A GAppShell class : this is so that we can manage the layers for this player's screen</li>
+										<li>A "Layer" GameplayTag : this is so that we can distinguish the layers from one another. One tag is required per type of stack we want on-screen</li>
+									</ul>
+
+									Once the app shell is created, the user needs to set GenericWidgetStacks for each layer they wish to use in the app shell. This can be as many layers as the user wants but I usually make sure I have at least 
+									one for the HUD, one for the pause menus and one for modal popups and one for toasts or notifications.
+
+									<br><br>Inside of each WidgetStack the user needs to set the GameplayTag created earlier as the Layer Tag for that stack. This is how the system knows which stack to push or pop widgets from.
+								</p>
+
+								<h4>Using the subsystem</h4>
+								<p>
+									In order to use the subsystem the user simply needs to get a reference to it through the "Get GNavigationService Subsystem" node.
+									From there the user can call Push or Pop with a reference to the requested playercontroller and push ot pop to the desired widget stack.
+
+									app shell is correctly set up the user now has the option on how they want to instantiate the app shell. They can either set it up using the GHUD class which has a property for the appsghell and will build it once the player's playercontroller is ready
+									or can implement their own logic to create it through blueprints or C++.
+
+									If using the GHUD class, once everything is set the HUD will call an OnHUDCreated() function flagging that the app shell is ready to be used.
+								</p>
+
+								<h4>Using the component</h4>
+								<p>
+									Similarly to the subsystem and HUD method, the user can also add the Navigation Component to their player controller and define the appshell they wish to use. From there it's the same as before, calling Push and Pop on the component reference.								
 								</p>
 							</div>
 							<div class="row-6 row-12-mobilep">
@@ -105,9 +125,6 @@
 						<li><a href="https://github.com/CesarSmall25" class="icon brands fa-github"><span class="label">Github</span></a></li>
 						<li><a href="https://www.linkedin.com/in/cesar-small/" class="icon brands fa-linkedin"><span class="label">LinkedIn</span></a></li>
 						<li><a href="../../contact.html" class="icon fa fa-regular fa-envelope"><span class="label">Contact Me</span></a></li>					</ul>
-					<ul class="copyright">
-						<li>&copy; Untitled. All rights reserved.</li><li>Design: <a href="http://html5up.net">HTML5 UP</a></li>
-					</ul>
 				</footer>
 
 		</div>

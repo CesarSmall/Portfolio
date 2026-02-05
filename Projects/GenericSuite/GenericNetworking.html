@@ -63,29 +63,40 @@
 				<section id="main" class="container">
 					<header>
 						<h2>Generic Networking</h2>
-						<p>A quick solution to inventories and hotbars</p>
+						<p>Simple way to handle custom online networking for Unreal Engine</p>
 					</header>
 					<div class="box">
 						<span class="image featured"><img src="../../images/pic01.jpg" alt="" /></span>
 						<h3>What is it?</h3>
 						<p>
-							Generic Storage in a plugin that allows for a quick and easy way to give a player an inventory or hotbar system in their game. It is designed to be as flexible as possible so that it can be used in a variety of different game types and styles.
+							Generic Networking provides Blueprint Async nodes that allow the user to set up quick and user friendly custom online networking solutions.
 							<br><br>
-							Generic Storage is both highly customizable and easy to use. It comes with a variety of different features that allow for a wide range of functionality, including:
+							Out of the box it provides nodes for:
 							<ul>
-								<li>Customizable inventory size and layout</li>
-								<li>Item stacking and unstacking</li>
-								<li>Drag and drop support through events and demos</li>
-								<li>Hotbar support</li>
-								<li>Replication using FastArraySerializer</li>
-								<li>Asset Manager support</li>
+								<li>Creating Sessions</li>
+								<li>Hosting Sessions</li>
+								<li>Finding Sessions</li>
+								<li>Joining Sessions</li>
+								<li>Destroying Sessions</li>
+							</ul>
+
+							It also comes with a subsystem for easy access to information about data found from the nodes.
 						</p>
+					
 						<div class="row">
 							<div class="row-6 row-12-mobilep">
 								<h3>How to use it</h3>
 								<p>
-									This part has not been finished yet, I apologize for the inconvenience.
-									<br><br>WIP
+
+									NOTE: this system is still a work in progress and is not yet complete.
+									<br><br>
+
+									To use the plugin the user needs to set up their project for online multiplayer through the project settings and enable the Online Subsystem they wish to use (such as Steam).
+									<br>Calling the nodes is as simple as dragging them into a blueprint graph and connecting them up to the desired flow.
+									Each node has its own set of inputs and outputs that can be used to customize the experience.
+									<br><br>
+									For Finding sessions, the node outputs an array of session results that can be looped through to get information about each session found.
+									<br>These results can then be passed into the Join Session node to connect to the desired session.
 								</p>
 							</div>
 							<div class="row-6 row-12-mobilep">

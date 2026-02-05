@@ -63,29 +63,32 @@
 				<section id="main" class="container">
 					<header>
 						<h2>Generic Characters</h2>
-						<p>A quick solution to inventories and hotbars</p>
+						<p>Quick and simple characters for Unreal Engine</p>
 					</header>
 					<div class="box">
 						<span class="image featured"><img src="../../images/pic01.jpg" alt="" /></span>
 						<h3>What is it?</h3>
 						<p>
-							Generic Storage in a plugin that allows for a quick and easy way to give a player an inventory or hotbar system in their game. It is designed to be as flexible as possible so that it can be used in a variety of different game types and styles.
+							Generic Characters is a plugin I've developed for Unreal Engine that provides an expansion on the base character templates 
+							providing expected extra behaviours such as crouching and sprinting in a fully replicated Character class with easily extendable input mappings via a custom input mapping system that I've created.
 							<br><br>
-							Generic Storage is both highly customizable and easy to use. It comes with a variety of different features that allow for a wide range of functionality, including:
+							The idea is that the user can install the plugin and have a character that works with them for setting up inputs and basic movement for quick prototyping of their game. Mostly useful for people 
+							who are maybe not super familiar with Enhanced Input or just want to get something working quickly.
+							
+							<br><br>It currently includes:
 							<ul>
-								<li>Customizable inventory size and layout</li>
-								<li>Item stacking and unstacking</li>
-								<li>Drag and drop support through events and demos</li>
-								<li>Hotbar support</li>
-								<li>Replication using FastArraySerializer</li>
-								<li>Asset Manager support</li>
+								<li>Customizable inputs</li>
+								<li>Support for first and third characters</li>
+								<li>Multiplayer input support</li>
+								<li>Multiple mapping context swaps through InputMapping registration and extendable Input Mode enums</li>
 						</p>
 						<div class="row">
 							<div class="row-6 row-12-mobilep">
 								<h3>How to use it</h3>
 								<p>
-									This part has not been finished yet, I apologize for the inconvenience.
-									<br><br>WIP
+									Once the plugin is installed, using it is as simple as creating a new Blueprint class based on the Generic Character class provided by the plugin
+									and setting up the desired input mappings in the Input Mapping Data asset also provided.
+									<br><br>From there the rest of the setup is up to the user in their project, which is typically by setting the pawn class in their game mode.
 								</p>
 							</div>
 							<div class="row-6 row-12-mobilep">
@@ -105,9 +108,6 @@
 						<li><a href="https://github.com/CesarSmall25" class="icon brands fa-github"><span class="label">Github</span></a></li>
 						<li><a href="https://www.linkedin.com/in/cesar-small/" class="icon brands fa-linkedin"><span class="label">LinkedIn</span></a></li>
 						<li><a href="../../contact.html" class="icon fa fa-regular fa-envelope"><span class="label">Contact Me</span></a></li>					</ul>
-					<ul class="copyright">
-						<li>&copy; Untitled. All rights reserved.</li><li>Design: <a href="http://html5up.net">HTML5 UP</a></li>
-					</ul>
 				</footer>
 
 		</div>

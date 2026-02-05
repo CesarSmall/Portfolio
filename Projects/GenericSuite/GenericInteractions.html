@@ -63,29 +63,37 @@
 				<section id="main" class="container">
 					<header>
 						<h2>Generic Interactions</h2>
-						<p>A quick solution to inventories and hotbars</p>
+						<p>Simple and effective interaction system for games</p>
 					</header>
 					<div class="box">
 						<span class="image featured"><img src="../../images/pic01.jpg" alt="" /></span>
 						<h3>What is it?</h3>
 						<p>
-							Generic Storage in a plugin that allows for a quick and easy way to give a player an inventory or hotbar system in their game. It is designed to be as flexible as possible so that it can be used in a variety of different game types and styles.
+							Generic Interactions is designed to keep efficient but effective interactions for players in games.
+							It works by using a sphere component to detect overlaps with interactable actors and a dot product to see if we are within interaction range
+							with a Line Of Sight check to ensure there are no obstacles in the way. This works both in first and third person games while also allowing 
+							you to enable or disable checks using the Z axis for height.
 							<br><br>
-							Generic Storage is both highly customizable and easy to use. It comes with a variety of different features that allow for a wide range of functionality, including:
+							As an added bonus, the system also include a simple way to be able to carry items by attaching them to sockets on the character through blueprints or code using the included carry component.
+							Both systems are designed to be usable separately but carry does not have an interaction detection system on its own so it's implied that they will be used together unless otherwise not wanted by the end user.
+							
+							<br><br>
+							Generic Interactions is both highly customizable and easy to use. It comes with an interface as well that allows for:
 							<ul>
-								<li>Customizable inventory size and layout</li>
-								<li>Item stacking and unstacking</li>
-								<li>Drag and drop support through events and demos</li>
-								<li>Hotbar support</li>
-								<li>Replication using FastArraySerializer</li>
-								<li>Asset Manager support</li>
+								<li>checks on if the object is permitting interactions</li>
+								<li>feedback before and after the interaction</li>
+								<li>Networked choice on how we want the event to be handled (TBD, will most likely be deprecated for possible user error reasons)</li>
+								<li>Server-side interaction checks</li>
 						</p>
 						<div class="row">
 							<div class="row-6 row-12-mobilep">
 								<h3>How to use it</h3>
 								<p>
-									This part has not been finished yet, I apologize for the inconvenience.
-									<br><br>WIP
+									To use the component, the user simply needs to add the Observer Component to their character or pawn class, adjust the settings for the range and dot product and bind the interaction input to call the TryInteract function on it.
+									From there the item that we wish to interact with simply needs to implement the Interaction Interface and define the desired behaviour on interaction through blueprints or C++.
+									
+									<br><br>There is also the possibility to limit checks to specific channels through a property on the component as well as tweak the interaction range, line of sight checks and Z axis checks.
+									These are not required but can help customize the experience to the user's needs. 
 								</p>
 							</div>
 							<div class="row-6 row-12-mobilep">
@@ -105,9 +113,6 @@
 						<li><a href="https://github.com/CesarSmall25" class="icon brands fa-github"><span class="label">Github</span></a></li>
 						<li><a href="https://www.linkedin.com/in/cesar-small/" class="icon brands fa-linkedin"><span class="label">LinkedIn</span></a></li>
 						<li><a href="../../contact.html" class="icon fa fa-regular fa-envelope"><span class="label">Contact Me</span></a></li>					</ul>
-					<ul class="copyright">
-						<li>&copy; Untitled. All rights reserved.</li><li>Design: <a href="http://html5up.net">HTML5 UP</a></li>
-					</ul>
 				</footer>
 
 		</div>
