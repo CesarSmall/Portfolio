@@ -98,9 +98,123 @@
 							<div class="row-6 row-12-mobilep">
 								<h3>Examples</h3>
 								<p>
-									This part has not been finished yet, I apologize for the inconvenience.
-									<br><br>WIP
+									A few snippets of the code for the storage plugin. The first one showcases a part of the components logic for
+									manipulating items and the second is an example of the fastarrayserializer for multiplayer.
 								</p>
+								
+								<h4>Add to Storage function snippet:</h4>
+<pre>bool UGStorageComponent::AddToStorage(FGItemStack& InItemStack, bool bStartFromEnd)
+{
+	if (!GetOwner()->HasAuthority())
+	{
+		if (NetworkingComponent)
+		{
+			NetworkingComponent->Server_AddToStorage(this, InItemStack);
+		}
+		
+		return false;
+	}
+	
+	if (InItemStack.IsEmpty()) return true;
+
+	//Get all of the already existing stacks
+	TArray<int32> Indices = GetAllIndicesOfItemType(InItemStack);
+
+	const int32 StartPoint	= bStartFromEnd ? Storage.Items.Num() - 1 : 0;
+	const int32 EndPoint	= bStartFromEnd ? -1 : Storage.Items.Num();
+	const int32 Step		= bStartFromEnd ? -1 : 1;
+
+	
+	//check if we can store inside of existing stacks.
+	for (int i = StartPoint; i != EndPoint; i += Step)
+	{
+		if (!Indices.IsValidIndex(i)) break;
+		
+		int32 Index = Indices[i];
+
+		InItemStack.StackSize = Storage.AppendItem(InItemStack, Index);
+		OnItemAddedToInventory.Broadcast(GetOwner(), Storage.GetItemAtIndex(Index), Index);
+		
+		if (InItemStack.StackSize <= 0)
+		{
+			return true;
+		}
+	}
+
+	//We didn't find enough space in the already existing stacks. Look for new slots to fit
+	int32 CurrentIndex = GetFirstEmptyIndex(bStartFromEnd);
+	while (!InItemStack.IsEmpty() && CurrentIndex != INDEX_NONE)
+	{
+		if (Storage.AddItem(InItemStack, CurrentIndex) != INDEX_NONE)
+		{
+			const FGItemStack StoredItem = Storage.GetItemAtIndex(CurrentIndex);
+			InItemStack.StackSize -= StoredItem.StackSize;
+			
+			OnItemAddedToInventory.Broadcast(GetOwner(), StoredItem, CurrentIndex);
+		}
+
+		if (InItemStack.IsEmpty())
+		{
+			return true;
+		}
+		
+		CurrentIndex = GetFirstEmptyIndex(bStartFromEnd);
+	}
+	
+	return false;
+}</pre>
+
+<h4>FastArray AppendItem snippet:</h4>
+<pre>
+int32 FGItemStackArray::AppendItem(const FGItemStack& InItemStack, int32 Index)
+{
+	FGItemStack ItemCpy = InItemStack;
+	if (Index != INDEX_NONE)
+	{
+		if (Items.IsValidIndex(Index) && Items[Index].IsSameItem(ItemCpy))
+		{
+			int RemainingSpace = Items[Index].GetRemainingSpace();
+			
+			if (RemainingSpace >= ItemCpy.StackSize)
+			{
+				Items[Index].StackSize += ItemCpy.StackSize;
+				MarkItemDirty(Items[Index]);
+				return 0;
+			}
+
+			Items[Index].StackSize += RemainingSpace;
+			MarkItemDirty(Items[Index]);
+			
+			ItemCpy.StackSize -= RemainingSpace;
+		}
+		
+		return ItemCpy.StackSize;
+	}
+	
+	for (int i = 0; i < Items.Num(); ++i)
+	{
+		if (Items[i].IsSameItem(ItemCpy))
+		{
+			int RemainingSpace = Items[i].GetRemainingSpace();
+
+			if (RemainingSpace >= ItemCpy.StackSize)
+			{
+				Items[i].StackSize += ItemCpy.StackSize;
+				MarkItemDirty(Items[i]);
+				return ItemCpy.StackSize;
+			}
+
+			Items[i].StackSize = RemainingSpace;
+			MarkItemDirty(Items[i]);
+			
+			ItemCpy.StackSize -= RemainingSpace;
+		}
+	}
+
+	return ItemCpy.StackSize;
+}
+</pre>
+
 							</div>
 						</div>
 					</div>

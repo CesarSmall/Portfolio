@@ -94,9 +94,65 @@
 							<div class="row-6 row-12-mobilep">
 								<h3>Examples</h3>
 								<p>
-									This part has not been finished yet, I apologize for the inconvenience.
-									<br><br>WIP
+									In the example below I showcase the code for placement verification. 
+									This is all sill WIP. 
 								</p>
+								
+								<h4>CanPlace code snippet:</h4>
+<pre>bool UGBuilderComponent::CanPlace_Implementation()
+{
+	UStaticMesh* Mesh = CurrentItemData.ProjectionMesh.LoadSynchronous();
+	FTransform Transform = PlacementMeshComponent->GetComponentTransform();
+
+	if (!Mesh) return false;
+
+	// Local-space bounds (center + extents)
+	const FBoxSphereBounds LocalBounds = Mesh->GetBounds();
+	const FVector LocalExtents = LocalBounds.BoxExtent;
+	const FVector LocalCenter  = LocalBounds.Origin;
+
+	// Scale extents by world scale (rotation is handled by box rotation below)
+	const FVector WorldScale = Transform.GetScale3D();
+	const FVector ScaledExtents = LocalExtents * WorldScale.GetAbs();
+
+	// World-space center of the box
+	const FVector WorldCenter = Transform.TransformPosition(LocalCenter);
+	const FQuat   WorldRot    = Transform.GetRotation();
+
+	FCollisionQueryParams Params(SCENE_QUERY_STAT(CanPlace), false);
+
+	if (APlayerController* PC = Cast<APlayerController>(GetOwner()))
+	{
+		Params.AddIgnoredActor(PC->GetPawn());
+	}
+	else
+	{
+		Params.AddIgnoredActor(GetOwner());
+	}
+
+	FCollisionShape Shape = FCollisionShape::MakeBox(ScaledExtents);
+
+	if (bDebug)
+	{
+		DrawDebugBox(GetWorld(), WorldCenter, ScaledExtents, WorldRot, FColor::Red, false, 1.f, 0, 2.5f);
+	}
+
+	FCollisionObjectQueryParams ObjectParams;
+	ObjectParams.AddObjectTypesToQuery(ECC_WorldDynamic);
+	ObjectParams.AddObjectTypesToQuery(ECC_Pawn);
+	ObjectParams.AddObjectTypesToQuery(ECC_PhysicsBody); // optional
+
+	const bool bBlocked = GetWorld()->OverlapAnyTestByObjectType(
+		WorldCenter,
+		WorldRot,
+		ObjectParams,
+		Shape,
+		Params
+	);
+	
+	return !bBlocked && PlacementHitResult.bBlockingHit;
+}
+</pre>
 							</div>
 						</div>
 					</div>

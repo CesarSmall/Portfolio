@@ -109,9 +109,43 @@
 							<div class="row-6 row-12-mobilep">
 								<h3>Examples</h3>
 								<p>
-									This part has not been finished yet, I apologize for the inconvenience.
-									<br><br>WIP
+									In here I will be showing an example of my FindSessions node. This node is Async and blueprint-specific for now
+									but allows for the user to easily search for steam sessions and react to the given outcome. 
 								</p>
+								
+								<h4>Example use case of the FindSessions node:</h4>
+								<span class="image fit"><img src="examples/GenericNetworkingConnectionExample.png" alt=""></span>
+								<h4>Code snippet of the FindSessions async node:</h4>
+								<pre>	Finding.Broadcast();
+
+	SessionSearch = MakeShared<FOnlineSessionSearch>();
+	SessionSearch->MaxSearchResults = MaxResults;
+	SessionSearch->bIsLanQuery = bIsLAN;
+
+	if (bSearchLobbies)
+	{
+		SessionSearch->QuerySettings.Set(SEARCH_LOBBIES, true, EOnlineComparisonOp::Equals);
+	}
+
+	FindHandle = SessionInterface->AddOnFindSessionsCompleteDelegate_Handle(
+		FOnFindSessionsCompleteDelegate::CreateUObject(this, &UGFindSessionAsync::HandleFindComplete)
+	);
+
+	IOnlineSubsystem* SS = Online::GetSubsystem(World);
+	UE_LOG(LogTemp, Warning, TEXT("[FIND] OSS=%s LAN=%d SearchLobbies=%d Max=%d"),
+		SS ? *SS->GetSubsystemName().ToString() : TEXT("NULL"),
+		bIsLAN, bSearchLobbies, MaxResults);
+
+	UE_LOG(LogTemp, Warning, TEXT("[FIND] NetIdValid=%d NetId=%s"),
+		LP && LP->GetPreferredUniqueNetId().IsValid(),
+		LP && LP->GetPreferredUniqueNetId().IsValid() ? *LP->GetPreferredUniqueNetId()->ToString() : TEXT("INVALID"));
+	
+	const bool bStarted = SessionInterface->FindSessions(*LP->GetPreferredUniqueNetId(), SessionSearch.ToSharedRef());
+	if (!bStarted)
+	{
+		Fail(TEXT("FindSessions() failed to start"));
+	}
+</pre>
 							</div>
 						</div>
 					</div>
