@@ -106,9 +106,153 @@
 							<div class="row-6 row-12-mobilep">
 								<h3>Examples</h3>
 								<p>
-									This part has not been finished yet, I apologize for the inconvenience.
-									<br><br>WIP
+									The plugin consists of 3 components, 2 of which are mashed into 1. For that reason I'll be sectioning the examples into 3. 
 								</p>
+								<h3>Observer Component</h3>
+								<h4>Code snipped from Observable component for checking for the most relevant object to the player:</h4>
+								<pre>AActor* UGObserverComponent::GetMostRelevantObservable()
+{
+    if (Observables.IsEmpty())
+    {
+        return nullptr;
+    }
+
+    /*Location data. Not in the loop since it's not relevant to specific interactables, to avoid doing unnecessary calcs*/
+    const AActor* Owner = GetOwner();
+    FVector ViewOrigin = Owner->GetActorLocation();
+    FVector ViewForward = Owner->GetActorForwardVector();
+    
+    if (bUseCameraForRotation)
+    {
+        if (APlayerController* PC = Cast<APawn>(Owner)->GetLocalViewingPlayerController())
+        {
+            if (APlayerCameraManager* CameraManager = PC->PlayerCameraManager)
+            {
+                ViewOrigin = CameraManager->GetCameraLocation();
+                ViewForward = CameraManager->GetCameraRotation().Vector();
+            }
+        }
+    }
+    
+    /*Results for finding the best suited interactable*/
+    TWeakObjectPtr<AActor> ChosenObservable = nullptr;
+    float BestScore = -FLT_MAX;
+    
+    for (const TWeakObjectPtr<AActor>& Observable : Observables)
+    {
+        /*Data for current interactable*/
+        TObjectPtr<AActor> CurrentObservable = Observable.Get();
+        
+        // Don't observe pawns (players/NPCs), and don't observe self
+        if (CurrentObservable->IsA<APawn>()) continue;
+        if (CurrentObservable == GetOwner()) continue;
+
+        /*If none of the checks for a valid interactable pass, discard this interactable and move on to the next*/
+        float DotProduct = 0;
+        if (!DoRelevancyChecks(CurrentObservable, ViewOrigin, ViewForward, DotProduct))
+        {
+            continue;
+        }
+
+        /*Tally up this interactable's score in comparison to the other interactables before and see if it's more relevant*/
+        const float Score = CalculateRelevancyScore(CurrentObservable, DotProduct);
+        if (Score > BestScore)
+        {
+            BestScore = Score;
+            ChosenObservable = CurrentObservable;
+        }
+    }
+    
+    return ChosenObservable.Get();
+}</pre>
+
+<h3>Carry Component</h3>
+<h4>Attach to actor snippet:</h4>
+<pre>void UGCarryComponent::AttachToActor(AActor* ObjectToAttach, FName SocketName)
+{
+	if (!ObjectToAttach) return;
+
+	if (!GetOwner()->HasAuthority())
+	{
+		Server_AttachToActor(ObjectToAttach, SocketName);
+		return;
+	}
+	
+	APawn* OwnerActor = Cast<APawn>(GetOwner());
+	if (!OwnerActor) return;
+
+	if (bOnlyCarry)
+	{
+		if (!ObjectToAttach->GetClass()->ImplementsInterface(UCarryInterface::StaticClass())) return;
+
+		if(!ICarryInterface::Execute_CanBePickedUp(ObjectToAttach, OwnerActor)) return;
+	}
+	
+	if (USkeletalMeshComponent* SkeletalMeshComp = OwnerActor->FindComponentByClass<USkeletalMeshComponent>())
+	{
+		ObjectToAttach->DisableComponentsSimulatePhysics();
+		if (ObjectToAttach->AttachToComponent(SkeletalMeshComp, FAttachmentTransformRules::SnapToTargetNotIncludingScale, SocketName))
+		{
+			SetAttachedParams(ObjectToAttach, OwnerActor);
+			OnItemPickedUp.Broadcast(ObjectToAttach, OwnerActor);
+			AttachedObjects.Add(FAttachedItem(SocketName, ObjectToAttach));
+			if (NeedsInterfaceCheck(ObjectToAttach))
+			{
+				ICarryInterface::Execute_OnPickedUp(ObjectToAttach, OwnerActor);
+			}
+			return;
+		}
+	}
+
+	if (UStaticMeshComponent* StaticMeshComp = OwnerActor->FindComponentByClass<UStaticMeshComponent>())
+	{
+		ObjectToAttach->DisableComponentsSimulatePhysics();
+		if (ObjectToAttach->AttachToComponent(StaticMeshComp,  FAttachmentTransformRules::SnapToTargetNotIncludingScale, SocketName))
+		{
+			SetAttachedParams(ObjectToAttach, OwnerActor);
+			OnItemPickedUp.Broadcast(ObjectToAttach, OwnerActor);
+			AttachedObjects.Add(FAttachedItem(SocketName, ObjectToAttach));
+			if (NeedsInterfaceCheck(ObjectToAttach))
+			{
+				ICarryInterface::Execute_OnPickedUp(ObjectToAttach, OwnerActor);
+			}
+		}
+	}
+}
+</pre>
+
+<h3>Interactor Component</h3>
+<h4>Interact code snippet:</h4>
+<pre>void UGInteractorComponent::Interact_Implementation(AActor* Target, FInteractionOptionHandle InteractionHandle)
+{
+    if (!GetOwner()->HasAuthority())
+    {
+        Interact_Server(Target, InteractionHandle);
+        return;
+    }
+    
+    if (!IsValid(Target))
+    {
+        InteractFailed();
+        return;
+    }
+    
+    OnInteractTriggered.Broadcast(Target, Cast<APawn>(GetOwner()));
+
+    APawn* InstigatorPawn = Cast<APawn>(GetOwner());
+    if (!InstigatorPawn) return;
+   
+    /*Even on the server this should be the pawn of the player that interacted.
+     *Pawns all exist on every version and the owner of this component should be the relevant player*/
+    if (Target->GetClass()->ImplementsInterface(UInteractorInterface::StaticClass()))
+    {
+        if (IInteractorInterface::Execute_CanInteract(Target, InstigatorPawn))
+        {
+            IInteractorInterface::Execute_Interact(Target, InstigatorPawn,  InteractionHandle);
+            UE_LOG(LogGInteractor, Log, TEXT("%s: Interactor: %s interacted with %s"),InstigatorPawn->HasAuthority() ? TEXT("Server") : TEXT("Client"), *InstigatorPawn->GetName(), *Target->GetName());
+        }
+    }
+}</pre>
 							</div>
 						</div>
 					</div>

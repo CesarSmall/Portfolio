@@ -100,9 +100,34 @@
 							<div class="row-6 row-12-mobilep">
 								<h3>Examples</h3>
 								<p>
-									This part has not been finished yet, I apologize for the inconvenience.
-									<br><br>WIP
+									This part showcases part of the way that we equip the item to the player when called.
 								</p>
+
+								<h4>Equip Item code snippet:</h4>
+								<pre>bool UGEquippableComponent::EquipItem(const FGEquipmentData& ItemToEquip)
+{
+	if (!ItemToEquip.IsValid() || !EquipmentMeshComponent) return false;
+
+	if (!GetOwner()->HasAuthority())
+	{
+		Server_EquipItem(ItemToEquip);
+		return true;
+	}
+	
+	if (EquipmentData.IsValid())
+	{
+		if (!UnequipItem())
+		{
+			return false;
+		}
+	}
+		
+	EquipmentData = ItemToEquip;
+	
+	ApplyEquipVisuals();
+
+	return true;
+}</pre>
 							</div>
 						</div>
 					</div>

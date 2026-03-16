@@ -120,9 +120,54 @@
 							<div class="row-6 row-12-mobilep">
 								<h3>Examples</h3>
 								<p>
-									This part has not been finished yet, I apologize for the inconvenience.
-									<br><br>WIP
+									The snippet below showcases part of the plugins systems allowing for the user to cache 
+									a games item values at the start of the game to increase performance throughout the playthrough for the player.
 								</p>
+
+								<h4>Snippet for building the systems adjustable item value cache:</h4>
+								<pre>void UGEconomyManagerSubsystem::FinishBuildItemValueCache()
+{
+	UDataTable* Table = EconomySettings->ItemValueTable.Get();
+	if (!Table)
+	{
+		UE_LOG(LogTemp, Error, TEXT("ItemValueTable async load completed but Table is null."));
+		return;
+	}
+
+	ItemValueCache.Reset();
+	
+	TArray<FGItemValueDefinition*> ItemValues;
+	Table->GetAllRows<FGItemValueDefinition>(TEXT("Item Value Cache Row Fetch"), ItemValues);
+
+	ItemValueCache.Reserve(ItemValues.Num());
+	
+	for (const FGItemValueDefinition* Row : ItemValues)
+	{
+		if (!Row) continue;
+		
+		FSoftObjectPath ObjectPath = Row->Metadata.ToSoftObjectPath();
+		if (!ObjectPath.IsValid())
+		{
+            UE_LOG(LogTemp, Warning, TEXT("ItemValueTable row has invalid Metadata soft reference."));
+			continue;
+		}
+		
+		FName Key = GetItemIdFromMetadata(Row->Metadata);
+		
+		if (ItemValueCache.Contains(Key))
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Duplicate item key '%s' in ItemValueTable."), *Key.ToString());
+			continue;
+		}
+
+		UE_LOG(LogTemp, Display, TEXT("Added %s to the cache"), *Key.ToString())
+		
+		ItemValueCache.Add(Key, FGItemValue(*Row));
+	}
+
+	OnItemValueCacheLoaded.Broadcast();
+}
+								</pre>
 							</div>
 						</div>
 					</div>

@@ -101,9 +101,26 @@
 							<div class="row-6 row-12-mobilep">
 								<h3>Examples</h3>
 								<p>
-									This part has not been finished yet, I apologize for the inconvenience.
-									<br><br>WIP
+									In this example I show part of the system I've created to simplify adding and removing input actions and mappings to the player.
+									Please note that this plugin is still in a very early stage.
 								</p>
+								<h4>Action binding logic for the Character System using Enhanced Input:</h4>
+<pre>void AGPlayerController::RegisterActionBinding(UEnhancedInputComponent* EnhancedInputComponent, const FGenericInputDefinition& Action)
+{
+	AGCharacter* CharacterInstance = Cast<AGCharacter>(GetPawn());
+	if (!CharacterInstance)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("AGPlayerController::RegisterActionBinding - No Character on %s"), *GetName());
+		return;
+	}
+	
+	UInputAction* InputAction = Action.Action;
+	FEnhancedInputActionEventBinding& Binding = EnhancedInputComponent->BindAction(
+		InputAction, Action.TiggerEvent, CharacterInstance, Action.Function);
+
+	ActionBindings.Add(InputAction, &Binding);
+}
+</pre>
 							</div>
 						</div>
 					</div>
