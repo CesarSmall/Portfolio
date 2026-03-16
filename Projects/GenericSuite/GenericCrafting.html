@@ -92,9 +92,75 @@
 							<div class="row-6 row-12-mobilep">
 								<h3>Examples</h3>
 								<p>
-									This part has not been finished yet, I apologize for the inconvenience.
-									<br><br>WIP
+									In the example below I show off the logic behind the processor for the crafting component. It showcases the starting of the processor component.
 								</p>
+								<h4>Start processing code snippet:</h4>
+								<pre>void UGProcessorComponent::TryStartProcessing(UGProcessorRecipe* Recipe)
+{
+	//We shouldn't do this on the client, call server to do check
+	if (!GetOwner()->HasAuthority())
+	{
+		Server_TryStartProcessing(Recipe);
+		return;
+	}
+
+	//Make sure we have a valid recipe index
+	if (!Recipes.Contains(Recipe))
+	{
+		if (bDebugText)
+		{
+			UE_LOG(LogGProcessing, Error, TEXT("INVALID RECIPE!"))
+		}
+		OnInvalidRecipeIndex.Broadcast(GetOwner(), CurrentRecipeIndex);
+		return;
+	}
+
+	//Since we know it's valid, let's fetch and store the recipe from its index
+	UGProcessorRecipe* CurrentRecipe = Recipes[CurrentRecipeIndex].Get();
+
+	//Make sure we're not already processing
+	if(bIsProcessing)
+	{
+		if (bDebugText)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Processing already started!"))
+		}
+		//If we've reached this at any point it means we failed to start the process properly
+		OnFailedToStartProcessing.Broadcast(GetOwner(), CurrentRecipe);
+		return;
+	}
+
+	//Try and gather the necessary items from input storage
+	if (!PullItemsFromInputStorage(CurrentRecipe, HeldInputItems))
+	{
+		PutItemsIntoInputStorage(HeldInputItems); //Put the items we took out back into the storage container
+		UE_LOG(LogGProcessing, Error, TEXT("We do not have all of the items necessary to start the processing!"))
+		OnFailedToStartProcessing.Broadcast(GetOwner(), CurrentRecipe);
+		return;
+	}
+
+	//We shouldn't start the processing if we don't have the appropriate space to store the output stuff.
+	//That would just make the output disappear
+	if (!HasEnoughSpaceForOutput())
+	{
+		PutItemsIntoInputStorage(HeldInputItems); //Put the items we took out back into the storage container
+		UE_LOG(LogGProcessing, Error, TEXT("Not enough space in output to start processing!"))
+		OnFailedToStartProcessing.Broadcast(GetOwner(), CurrentRecipe);
+		return;
+	}
+
+	//We've passed all of the checks and can now start processing
+	if (bDebugText)
+	{
+		UE_LOG(LogGProcessing, Display, TEXT("STARTING PROCESSING"))
+	}
+
+	//Set the processing time and enable tick so that we can actually process
+	RemainingTime = GetCurrentRecipe()->TimeToProcess;
+	SetComponentTickEnabled(true);
+	
+	OnStartItemProcess.Broadcast(GetOwner(), CurrentRecipe);//Send out a broadcast to let other systems know that we've successfully started our processing
+}</pre>
 							</div>
 						</div>
 					</div>
